@@ -61,16 +61,19 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             else:
                 logger.warning("Missing the operation mode.")
 
-            # convert to BetterTransformer
-            try:
-                self.model = BetterTransformer.transform(self.model)
-                logger.info(
-                    "Successfully transformed the model to use BetterTransformer."
-                )
-            except Exception as e:
-                raise Exception(
-                    f"Could not convert the model to BetterTransformer, with the error: {e}"
-                )
+            if self.setup_config["bettertransformer"] == True:
+                # convert to BetterTransformer
+                try:
+                    self.model = BetterTransformer.transform(self.model)
+                    logger.info(
+                        "Successfully transformed the model to use BetterTransformer."
+                    )
+                except Exception as e:
+                    raise Exception(
+                        f"Could not convert the model to BetterTransformer, with the error: {e}"
+                    )
+            else:
+                logger.info("Using vanilla PyTorch.")
 
             self.model.to(self.device)
         else:

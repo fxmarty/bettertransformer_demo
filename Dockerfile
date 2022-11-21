@@ -57,4 +57,3 @@ RUN torch-model-archiver --model-name ${MAR_NAME_VAR} \
     --export-path model_store
 
 CMD torchserve --start --model-store model_store --models my_tc=${MAR_NAME_VAR}.mar --ncs --ts-config ${PROP_PATH_VAR} && tail -f /dev/null
-
