@@ -61,7 +61,7 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             else:
                 logger.warning("Missing the operation mode.")
 
-            if self.setup_config["bettertransformer"] == True:
+            if self.setup_config["bettertransformer"] == True or os.environ.get("USE_BETTERTRANSFORMER_VAR", "no") == "yes":
                 # convert to BetterTransformer
                 try:
                     self.model = BetterTransformer.transform(self.model)

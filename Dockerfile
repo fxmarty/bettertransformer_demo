@@ -45,9 +45,11 @@ RUN git init . && git remote add -f origin https://github.com/fxmarty/bettertran
 
 ARG PROP_PATH
 ARG MAR_NAME
+ARG USE_BETTERTRANSFORMER="no"
 
 ENV PROP_PATH_VAR=$PROP_PATH
 ENV MAR_NAME_VAR=$MAR_NAME
+ENV USE_BETTERTRANSFORMER_VAR=$USE_BETTERTRANSFORMER
 
 RUN torch-model-archiver --model-name ${MAR_NAME_VAR} \
     --version 1.0 --serialized-file distilbert-base-uncased-finetuned-sst-2-english/pytorch_model.bin \
