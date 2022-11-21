@@ -63,13 +63,6 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         else:
             logger.warning("Missing the setup_config.json file.")
 
-        # Loading the shared object of compiled Faster Transformer Library if Faster Transformer is set
-        if self.setup_config["FasterTransformer"]:
-            faster_transformer_complied_path = os.path.join(
-                model_dir, "libpyt_fastertransformer.so"
-            )
-            torch.classes.load_library(faster_transformer_complied_path)
-
         # Loading the model and tokenizer from checkpoint and config files based on the user's choice of mode
         # further setup config can be added.
         if self.setup_config["save_mode"] == "pretrained":
@@ -80,25 +73,14 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             else:
                 logger.warning("Missing the operation mode.")
 
-            """
             # convert to BetterTransformer
             try:
                 self.model = BetterTransformer.transform(self.model)
                 logger.info("Successfully transformed the model to use BetterTransformer.")
             except Exception as e:
                 raise Exception(f"Could not convert the model to BetterTransformer, with the error: {e}")
-            """
 
-            # HF GPT2 models options can be gpt2, gpt2-medium, gpt2-large, gpt2-xl
-            # this basically palce different model blocks on different devices,
-            # https://github.com/huggingface/transformers/blob/v4.17.0/src/transformers/models/gpt2/modeling_gpt2.py#L962
-            if (
-                self.setup_config["model_parallel"]
-                and "gpt2" in self.setup_config["model_name"]
-            ):
-                self.model.parallelize()
-            else:
-                self.model.to(self.device)
+            self.model.to(self.device)
         else:
             logger.warning("Missing the checkpoint or state_dict.")
 
@@ -180,11 +162,8 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
 
         # Handling inference for sequence_classification.
         predictions = self.model(input_ids_batch, attention_mask_batch)
-        print(
-            "This the output size from the Seq classification model",
-            predictions[0].size(),
-        )
-        print("This the output from the Seq classification model", predictions)
+        print(f"Output size of the text-classification model: {predictions[0].size()}")
+        print(f"Output of the text-classification model: {predictions}")
 
         num_rows, num_cols = predictions[0].shape
         for i in range(num_rows):
@@ -193,7 +172,7 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             predicted_idx = str(y_hat)
             inferences.append(self.mapping[predicted_idx])
 
-        print("Generated text", inferences)
+        print(f"Processed output: {inferences}")
         return inferences
 
     def postprocess(self, inference_output):
