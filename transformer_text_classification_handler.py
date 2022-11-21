@@ -1,26 +1,14 @@
-import ast
 import json
 import logging
 import os
+import time
 from abc import ABC
 
-from optimum.bettertransformer import BetterTransformer
 import torch
 import transformers
-
-from captum.attr import LayerIntegratedGradients
-from transformers import (
-    AutoModelForCausalLM,
-    AutoModelForQuestionAnswering,
-    AutoModelForSequenceClassification,
-    AutoModelForTokenClassification,
-    AutoTokenizer,
-    GPT2TokenizerFast,
-)
-
+from optimum.bettertransformer import BetterTransformer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from ts.torch_handler.base_handler import BaseHandler
-
-import time
 
 logger = logging.getLogger(__name__)
 logger.info("Transformers version %s", transformers.__version__)
@@ -76,9 +64,13 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             # convert to BetterTransformer
             try:
                 self.model = BetterTransformer.transform(self.model)
-                logger.info("Successfully transformed the model to use BetterTransformer.")
+                logger.info(
+                    "Successfully transformed the model to use BetterTransformer."
+                )
             except Exception as e:
-                raise Exception(f"Could not convert the model to BetterTransformer, with the error: {e}")
+                raise Exception(
+                    f"Could not convert the model to BetterTransformer, with the error: {e}"
+                )
 
             self.model.to(self.device)
         else:
@@ -135,11 +127,11 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         # logger.info(f"Batched the received text into {all_texts}")
 
         inputs = self.tokenizer(
-                    all_texts,
-                    padding=True,
-                    truncation=True,
-                    return_tensors="pt",
-                )
+            all_texts,
+            padding=True,
+            truncation=True,
+            return_tensors="pt",
+        )
 
         self.n_pads = (inputs["input_ids"] == 0).sum().item()
         self.n_elems = inputs["input_ids"].numel()
@@ -227,11 +219,16 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
 
         handler_time = round((time.time() - start_time) * 1000, 2)
         peak_gpu_memory = round(torch.cuda.max_memory_allocated("cuda:0") * 10e-6, 2)
-        metrics.add_time(
-            "HandlerTime", handler_time, None, "ms"
-        )
+        metrics.add_time("HandlerTime", handler_time, None, "ms")
         torch.cuda.reset_peak_memory_stats("cuda:0")
 
         for i, out in enumerate(output):
-            output[i] = (out, handler_time, peak_gpu_memory, self.n_pads, self.n_elems, self.sequence_length)
+            output[i] = (
+                out,
+                handler_time,
+                peak_gpu_memory,
+                self.n_pads,
+                self.n_elems,
+                self.sequence_length,
+            )
         return output
