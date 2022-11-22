@@ -174,8 +174,9 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         # Handling inference for sequence_classification.
         with torch.no_grad():
             predictions = self.model(input_ids_batch, attention_mask_batch)
-        # print(f"Output size of the text-classification model: {predictions[0].size()}")
-        # print(f"Output of the text-classification model: {predictions}")
+
+        logger.info(f"Output size of the text-classification model: {predictions[0].size()}")
+        logger.info(f"Output of the text-classification model: {predictions}")
 
         num_rows, num_cols = predictions[0].shape
         for i in range(num_rows):
@@ -184,7 +185,7 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             predicted_idx = str(y_hat)
             inferences.append(self.mapping[predicted_idx])
 
-        # print(f"Processed output: {inferences}")
+        logger.info(f"Processed output: {inferences}")
         return inferences
 
     def postprocess(self, inference_output):
