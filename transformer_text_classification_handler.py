@@ -160,6 +160,7 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         self.n_pads = (inputs["input_ids"] == 0).sum().item()
         self.n_elems = inputs["input_ids"].numel()
         self.sequence_length = inputs["input_ids"].shape[1]
+        self.effective_batch_size = inputs["input_ids"].shape[0]
 
         inputs["input_ids"] = inputs["input_ids"].to(self.device)
         inputs["attention_mask"] = inputs["attention_mask"].to(self.device)
@@ -257,5 +258,6 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
                 self.n_pads,
                 self.n_elems,
                 self.sequence_length,
+                self.effective_batch_size
             )
         return output
