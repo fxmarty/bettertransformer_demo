@@ -146,7 +146,6 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
 
         # logger.info(f"Batched the received text into {all_texts}")
         if pre_tokenized == False:
-            logger.info("TOKENIZEING")
             inputs = self.tokenizer(
                 all_texts,
                 padding=True,
@@ -183,8 +182,8 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         with torch.no_grad():
             predictions = self.model(input_ids_batch, attention_mask_batch)
 
-        logger.info(f"Output size of the text-classification model: {predictions[0].size()}")
-        logger.info(f"Output of the text-classification model: {predictions}")
+        # logger.info(f"Output size of the text-classification model: {predictions[0].size()}")
+        # logger.info(f"Output of the text-classification model: {predictions}")
 
         num_rows, num_cols = predictions[0].shape
         for i in range(num_rows):
@@ -193,7 +192,7 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             predicted_idx = str(y_hat)
             inferences.append(self.mapping[predicted_idx])
 
-        logger.info(f"Processed output: {inferences}")
+        # logger.info(f"Processed output: {inferences}")
         return inferences
 
     def postprocess(self, inference_output):
