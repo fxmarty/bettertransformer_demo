@@ -154,8 +154,8 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             )
         else:
             inputs = {}
-            inputs["input_ids"] = torch.cat(all_input_ids)
-            inputs["attention_mask"] = torch.cat(all_attention_masks)
+            inputs["input_ids"] = torch.stack(all_input_ids)
+            inputs["attention_mask"] = torch.stack(all_attention_masks)
 
         self.n_pads = (inputs["input_ids"] == 0).sum().item()
         self.n_elems = inputs["input_ids"].numel()
