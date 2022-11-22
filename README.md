@@ -21,7 +21,7 @@ Finally, download the Dockerfile needed to run the TorchServe API:
 
 `wget https://github.com/fxmarty/bettertransformer_demo/raw/main/Dockerfile`
 
-Build the docker (use `ts_config_bettertransformer.properties` and `distilbert_sst2_bettertransformer` args for BetterTransformer):
+Build the docker (for BetterTransformer, use `ts_config_bettertransformer.properties` and `distilbert_sst2_bettertransformer` args and `--build-arg USE_BETTERTRANSFORMER=yes`):
 
 ```
 docker build -f Dockerfile \
