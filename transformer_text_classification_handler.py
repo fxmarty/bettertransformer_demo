@@ -155,7 +155,8 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         self.n_elems = inputs["input_ids"].numel()
         self.sequence_length = inputs["input_ids"].shape[1]
 
-        inputs = inputs.to(self.device)
+        inputs["input_ids"] = inputs["input_ids"].to(self.device)
+        inputs["attention_mask"] = inputs["attention_mask"].to(self.device)
 
         return (inputs["input_ids"], inputs["attention_mask"])
 
