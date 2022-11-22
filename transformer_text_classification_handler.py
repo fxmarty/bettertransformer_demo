@@ -125,6 +125,9 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             if input_data is None:
                 input_data = data.get("body")
 
+            if isinstance(input_data, (bytes, bytearray)):
+                input_data = input_data.decode("utf-8")
+
             retrieved_data = json.loads(input_data)
             if isinstance(retrieved_data["text"], (bytes, bytearray)):
                 input_text = input_text.decode("utf-8")
