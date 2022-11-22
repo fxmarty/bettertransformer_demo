@@ -136,7 +136,8 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
 
 
             if retrieved_data["pre_tokenized"] == False:
-                if isinstance(retrieved_data["text"], (bytes, bytearray)):
+                input_text = retrieved_data["text"]
+                if isinstance(input_text, (bytes, bytearray)):
                     input_text = input_text.decode("utf-8")
                 all_texts.append(input_text)
             else:
