@@ -156,7 +156,8 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         inferences = []
 
         # Handling inference for sequence_classification.
-        predictions = self.model(input_ids_batch, attention_mask_batch)
+        with torch.no_grad():
+            predictions = self.model(input_ids_batch, attention_mask_batch)
         print(f"Output size of the text-classification model: {predictions[0].size()}")
         print(f"Output of the text-classification model: {predictions}")
 
