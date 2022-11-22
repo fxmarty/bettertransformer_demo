@@ -129,7 +129,7 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
                 input_data = input_data.decode("utf-8")
 
             retrieved_data = json.loads(input_data)
-            if isinstance(retrieved_data["text"], (bytes, bytearray)):
+            if "text" in retrieved_data.keys() and isinstance(retrieved_data["text"], (bytes, bytearray)):
                 input_text = input_text.decode("utf-8")
             all_texts.append(input_text)
 
