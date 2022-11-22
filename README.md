@@ -45,6 +45,7 @@ Use `curl http://127.0.0.1:8080/ping` to check the TorchServe server is running 
 You can as well try:
 
 ```python
+# outdated example, will not work
 import requests
 
 headers = {"Content-Type": "text/plain"}
