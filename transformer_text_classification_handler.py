@@ -122,19 +122,15 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         pre_tokenized = True
         for idx, data in enumerate(requests):
             input_data = data.get("data")
-            if input_text is None:
+            if input_data is None:
                 input_data = data.get("body")
 
-
-            #if isinstance(input_text, (bytes, bytearray)):
-            #    input_text = input_text.decode("utf-8")
-
-            sent_data = json.loads(input_data)
-            if isinstance(input_data["text"], (bytes, bytearray)):
+            retrieved_data = json.loads(input_data)
+            if isinstance(retrieved_data["text"], (bytes, bytearray)):
                 input_text = input_text.decode("utf-8")
             all_texts.append(input_text)
 
-            pre_tokenized = pre_tokenized and sent_data["pre_tokenized"]
+            pre_tokenized = pre_tokenized and retrieved_data["pre_tokenized"]
 
         # logger.info(f"Batched the received text into {all_texts}")
         if pre_tokenized == False:
@@ -147,8 +143,8 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             )
         else:
             inputs = {}
-            inputs["input_ids"] = torch.tensor(sent_data["input_ids"])
-            inputs["attention_mask"] = torch.tensor(sent_data["attention_mask"])
+            inputs["input_ids"] = torch.tensor(retrieved_data["input_ids"])
+            inputs["attention_mask"] = torch.tensor(retrieved_data["attention_mask"])
 
         self.n_pads = (inputs["input_ids"] == 0).sum().item()
         self.n_elems = inputs["input_ids"].numel()
