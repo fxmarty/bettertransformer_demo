@@ -119,22 +119,36 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         attention_mask_batch = None
 
         all_texts = []
+        pre_tokenized = True
         for idx, data in enumerate(requests):
-            input_text = data.get("data")
+            input_data = data.get("data")
             if input_text is None:
-                input_text = data.get("body")
-            if isinstance(input_text, (bytes, bytearray)):
+                input_data = data.get("body")
+
+
+            #if isinstance(input_text, (bytes, bytearray)):
+            #    input_text = input_text.decode("utf-8")
+
+            sent_data = json.loads(input_data)
+            if isinstance(input_data["text"], (bytes, bytearray)):
                 input_text = input_text.decode("utf-8")
             all_texts.append(input_text)
 
-        # logger.info(f"Batched the received text into {all_texts}")
+            pre_tokenized = pre_tokenized and sent_data["pre_tokenized"]
 
-        inputs = self.tokenizer(
-            all_texts,
-            padding=True,
-            truncation=True,
-            return_tensors="pt",
-        )
+        # logger.info(f"Batched the received text into {all_texts}")
+        if pre_tokenized == False:
+            logger.info("TOKENIZEING")
+            inputs = self.tokenizer(
+                all_texts,
+                padding=True,
+                truncation=True,
+                return_tensors="pt",
+            )
+        else:
+            inputs = {}
+            inputs["input_ids"] = sent_data["input_ids"]
+            inputs["attention_mask"] = sent_data["attention_mask"]
 
         self.n_pads = (inputs["input_ids"] == 0).sum().item()
         self.n_elems = inputs["input_ids"].numel()
@@ -158,8 +172,8 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
         # Handling inference for sequence_classification.
         with torch.no_grad():
             predictions = self.model(input_ids_batch, attention_mask_batch)
-        print(f"Output size of the text-classification model: {predictions[0].size()}")
-        print(f"Output of the text-classification model: {predictions}")
+        # print(f"Output size of the text-classification model: {predictions[0].size()}")
+        # print(f"Output of the text-classification model: {predictions}")
 
         num_rows, num_cols = predictions[0].shape
         for i in range(num_rows):
@@ -168,7 +182,7 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
             predicted_idx = str(y_hat)
             inferences.append(self.mapping[predicted_idx])
 
-        print(f"Processed output: {inferences}")
+        # print(f"Processed output: {inferences}")
         return inferences
 
     def postprocess(self, inference_output):
