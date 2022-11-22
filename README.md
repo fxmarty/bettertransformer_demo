@@ -15,7 +15,7 @@ The example is run on an AWS EC2 g4dn instance, which uses a T4 NVIDIA GPU. Usin
 sudo apt update && sudo apt upgrade
 ```
 
-Then, we recommend installing docker following the [Nvidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) guide, and installing the NVIDIA drivers through the package manager and nvidia drivers (for example `nvidia-driver-520`). You may need to reboot after the install.
+Then, we recommend installing docker following the [Nvidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) guide, and installing the NVIDIA drivers through the package manager and nvidia drivers (for example `nvidia-driver-520`). You may need to add yourself in the `docker` group (`usermod -aG docker ubuntu`). You may need to reboot after the install.
 
 Finally, download the Dockerfile needed to run the TorchServe API:
 
@@ -35,6 +35,8 @@ Run the TorchServe server:
 ```
 docker run --rm -it --gpus all -p 8080:8080 -p 8081:8081 bettertransformer-demo:latest
 ```
+
+To run in background, use `nohup` without the `-it` argument.
 
 ## Check the server is successful running
 

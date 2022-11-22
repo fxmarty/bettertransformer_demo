@@ -73,7 +73,7 @@ class TransformersSeqClassifierHandler(BaseHandler, ABC):
                         f"Could not convert the model to BetterTransformer, with the error: {e}"
                     )
             else:
-                logger.info("Using vanilla PyTorch.")
+                logger.info("Using vanilla PyTorch (not BetterTransformer).")
 
             self.model.to(self.device)
         else:
